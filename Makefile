@@ -1,4 +1,4 @@
 default:
-	g++ -c -g *.cpp
-	g++ -g -o seqbfs.o SlidingPuzzleState.o main.o Timer.o BFS.o
+	g++ -std=c++11 -c *.cpp
+	g++ -std=c++11 -o seqbfs.o SlidingPuzzleState.o main.o Timer.o BFS.o
 	./seqbfs.o
