@@ -44,11 +44,13 @@ namespace ParallelBFS {
                             s.UndoMove(moves.PeekFront());
                             moves.RemoveFront();
                             
+                            dataLock->lock();
                             if (data[rank] == 255)
                             {
                                 data[rank] = depth+1;
-                                seenStates++;
+                                (*seenStates)++;
                             }
+                            dataLock->unlock();
                         }
                     }
                 }
@@ -95,7 +97,7 @@ namespace ParallelBFS {
             // 4. to join with the threads
             for (int x = 0; x < numThreads; x++)
             {
-                threads[x] = new std::thread(&workQueue, &lock, stateDepths, &seenStates, currDepth);
+                threads[x] = new std::thread(WorkerThread, &workQueue, &lock, stateDepths, &seenStates, currDepth);
             }
             
             //for (uint32_t x = 0; x < s.GetMaxRank(); x++)
