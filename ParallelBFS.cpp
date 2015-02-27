@@ -27,6 +27,7 @@ namespace ParallelBFS {
         // Write your solution code here
         uint32_t tmp;
         LList<int> moves;
+        LList<uint32_t> need_to_write;
         SlidingPuzzleState s;
         while(true){
             if (workQueue->RemoveFront(tmp)) {
@@ -44,6 +45,11 @@ namespace ParallelBFS {
                             s.UndoMove(moves.PeekFront());
                             moves.RemoveFront();
                             
+                            if (data[rank] == 255)
+                            {
+                                need_to_write.AddFront(rank);
+                            }
+                            /*
                             dataLock->lock();
                             if (data[rank] == 255)
                             {
@@ -51,9 +57,18 @@ namespace ParallelBFS {
                                 (*seenStates)++;
                             }
                             dataLock->unlock();
+                             */
                         }
                     }
                 }
+                //write to data array at once
+                dataLock->lock();
+                while(!need_to_write.IsEmpty()){
+                    data[need_to_write.PeekFront()] = depth+1;
+                    need_to_write.RemoveFront();
+                    (*seenStates)++;
+                }
+                dataLock->unlock();
                 
             }else{
                 std::this_thread::yield();
